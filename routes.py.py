@@ -2,7 +2,8 @@ from flask import *
 from functools import wraps
 import sqlite3
 
-artists = ['Solomun', 'Dubfire']
+# artists = ['Solomun', 'Dubfire']
+# DJname = request.form['DJname']
 
 
 DATABASE = 'Beatscrape.db'
@@ -26,15 +27,17 @@ def welcome():
 # 11/14 ... updated scrapelist2 in attempts to get the user input to be saved in ArtistMonitor table
 @app.route('/scrapelist2', methods=['GET', 'POST'])
 def scrapelist2():
-#	DJname = request.form['DJname']
-	conn = sqlite3.connect('Beatscrape.db')
-	cursor = conn.cursor()
-	posts = [dict(DJname=row[0]) for row in cursor.fetchall()]
-#	cursor.execute("INSERT INTO ArtistMonitor VALUES (?)", (DJname))
-	conn.commit()
-	cursor.close()
-	conn.close()
-	return render_template("scrapelist2.html", posts=posts)
+	if request.method == 'POST':
+		global feed
+		conn = sqlite3.connect('Beatscrape.db')
+		cursor = conn.cursor()
+		posts = [dict(DJname=row[0]) for row in cursor.fetchall()]
+		DJname = request.form['DJname']
+		cursor.execute("INSERT INTO ArtistMonitor VALUES (NULL,?)", (DJname))
+		conn.commit()
+		cursor.close()
+		conn.close()
+	return render_template("scrapelist2.html")
 
 
 def login_required(test):
